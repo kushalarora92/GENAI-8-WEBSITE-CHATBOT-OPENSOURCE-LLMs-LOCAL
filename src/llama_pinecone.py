@@ -1,4 +1,3 @@
-from langchain_community.document_loaders import UnstructuredURLLoader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Pinecone as LangchainPinecone
@@ -13,13 +12,10 @@ import nltk
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
 
-from src.__init__ import URLs
+from src.__init__ import documents
 
 from dotenv import load_dotenv
 load_dotenv()
-
-loaders = UnstructuredURLLoader(URLs)
-documents = loaders.load()
 
 text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 chunks = text_splitter.split_documents(documents)
@@ -76,5 +72,5 @@ llm = HuggingFacePipeline(pipeline=pipe)
 chain = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=vector_store.as_retriever())
 
 def generate_response(user_input):
-    response = chain.run(user_input)
-    return response
+    response = chain.invoke({"query": user_input, "return_only_outputs": True})
+    return response["result"]

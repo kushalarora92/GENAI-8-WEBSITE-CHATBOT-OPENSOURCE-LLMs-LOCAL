@@ -7,8 +7,7 @@ import uvicorn
 import os
 
 from src.llama_pinecone import generate_response as generate_response_llama
-# TODO: Import Falcon generate_response when implemented
-# from src.falcon_chrome import generate_response as generate_response_falcon
+from src.falcon_chroma import generate_response as generate_response_falcon
 
 app = FastAPI()
 
@@ -29,8 +28,7 @@ async def chat(request: ChatRequest):
     elif request.model == "llama":
         answer = generate_response_llama(request.message)
     elif request.model == "falcon":
-        # TODO: Implement Falcon response
-        answer = "Falcon model not yet implemented"
+        answer = generate_response_falcon(request.message)
     else:
         answer = "Invalid model selection"
     return {"response": answer}
